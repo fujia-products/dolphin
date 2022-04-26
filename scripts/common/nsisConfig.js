@@ -10,7 +10,7 @@ else
     include: path.join(process.cwd(), 'script/common/installer.nsh'),
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
-    shortcutName: 'Collie',
+    shortcutName: 'Dolphin',
     installerIcon: '../resource/unrelease/icon.ico',
     uninstallerIcon: '../resource/unrelease/icon.ico',
     installerHeader: '../resource/unrelease/icon.ico',

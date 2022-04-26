@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { merge } = require('webpack-merge');
-require('dotenv').config();
+// require('dotenv').config();
 
 const mainBaseConfig = require('../common/webpackMainBase.js');
 const renderBaseConfig = require('../common/webpackRenderBase.js');
@@ -128,7 +128,7 @@ const release = {
         },
         files: ['**'],
         extends: null,
-        productName: 'collie',
+        productName: 'Dolphin',
         appId: 'site.fujia.app', // the property is important, replace with you own appId
         copyright: 'Copyright © 2022 ${author}',
         asar: true,
@@ -142,7 +142,7 @@ const release = {
       project: cwdDir,
       publish: {
         provider: 'github',
-        repo: 'https://github.com/fujia-products/collie',
+        repo: 'https://github.com/fujia-products/dolphin',
         releaseType: 'release',
         // token: process.env.GH_TOKEN,
       },
