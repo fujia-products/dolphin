@@ -1,10 +1,12 @@
 export const ROUTER = {
   home: '/',
+  login: '/login',
   counter: '/counter',
 };
 
 export const ROUTER_KEYS = {
   home: 'home',
+  login: 'login',
   counter: 'counter',
 };
 

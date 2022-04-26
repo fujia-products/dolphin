@@ -4,4 +4,10 @@ declare module '*.png' {
   export default png;
 }
 
+declare module '*.svg' {
+  const svg: string;
+
+  export default svg;
+}
+
 declare module '*.scss';

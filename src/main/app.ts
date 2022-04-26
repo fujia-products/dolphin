@@ -2,14 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import { app, BrowserWindow, protocol, ipcMain } from 'electron';
 
-const ROOT_PATH = path.join(app.getAppPath(), '../..');
+import { appUpdater } from './updater';
+
+// const ROOT_PATH = path.join(app.getAppPath(), '../..');
 
 // Disable hardware acceleration which easy to lead to host interface jamming under Ubuntu System.
 app.disableHardwareAcceleration();
 
-ipcMain.on('get-root-path', (event, arg) => {
-  event.reply('reply-root-path', ROOT_PATH);
-});
+// ipcMain.on('get-root-path', (event, arg) => {
+//   event.reply('reply-root-path', ROOT_PATH);
+// });
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -84,4 +86,9 @@ app.on('ready', () => {
   } else {
     mainWin.loadURL(`http://localhost:${process.env.WEB_PORT}`);
   }
+
+  /**
+   * NOTE: added autoUpdate
+   */
+  appUpdater(mainWin).checkForUpdates();
 });
