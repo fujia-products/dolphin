@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router';
 import { shell } from 'electron';
-import { Layout, Menu, Breadcrumb, Avatar } from 'antd';
+import { Layout, Menu, Avatar } from 'antd';
 import { useDocumentTitle } from '@fujia/hooks';
 
-import { Logo, PageHeader, PageContent, PageFooter } from './styles';
+import { Logo, PageHeader, UserOperate, PageContent, PageFooter } from './styles';
 
 const NAVIGATION_LIST = [
   {
@@ -25,12 +25,12 @@ const NAVIGATION_LIST = [
   },
 ];
 
-// import { useAppSelector } from '@store/hooks';
-// import { selectAppName } from '@store/globalSlice';
+import { useAppSelector } from '@store/hooks';
+import { selectUser } from '@store/global.slice';
 // import { getAppPath } from '@utils/appPath';
 
 export const Home = () => {
-  // const appName = useAppSelector(selectAppName);
+  const curUser = useAppSelector(selectUser);
   const navigate = useNavigate();
   // const [appPath, setAppPath] = useState('');
   useDocumentTitle('Dolphin | All From Love');
@@ -39,19 +39,14 @@ export const Home = () => {
     return () => {
       if (routeName === 'login') {
         navigate('/login');
+      } else if (routeName === 'register') {
+        navigate('/register');
       } else if (routeName === 'github') {
         shell.openExternal('https://github.com/fushenguang/marathon');
       }
     };
   };
 
-  // useEffect(() => {
-  //   getAppPath().then((rootPath: string) => {
-  //     if (rootPath) {
-  //       setAppPath(rootPath);
-  //     }
-  //   });
-  // }, []);
   const handleLogoClick = () => {
     navigate('/');
   };
@@ -61,7 +56,19 @@ export const Home = () => {
       <PageHeader style={{ position: 'fixed' }}>
         <Logo onClick={handleLogoClick} />
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['develop']} items={NAVIGATION_LIST} />
-        <Avatar size={40} />
+        {!curUser ? (
+          <UserOperate>
+            <span className="login" onClick={handleLink('login')}>
+              登录
+            </span>
+            <span className="separator">/</span>
+            <span className="register" onClick={handleLink('register')}>
+              注册
+            </span>
+          </UserOperate>
+        ) : (
+          <Avatar size={40} />
+        )}
       </PageHeader>
       <PageContent>
         <h1>content</h1>

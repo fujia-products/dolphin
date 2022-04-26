@@ -12,8 +12,8 @@ const Router = () => {
       <Routes>
         <Route path={ROUTER.home} element={<Home />} />
         <Route path={ROUTER.login} element={<LoginAndRegisterPage />} />
+        <Route path={ROUTER.register} element={<LoginAndRegisterPage />} />
         {/* <Route path={ROUTER.counter} element={<Counter />} /> */}
-
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </HashRouter>

@@ -20,6 +20,23 @@ export const PageHeader = styled(Header)`
   width: 100%;
 `;
 
+export const UserOperate = styled.div`
+  color: #ddd;
+
+  .login,
+  .register {
+    cursor: pointer;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  .separator {
+    padding: 0 6px;
+  }
+`;
+
 export const PageContent = styled(Content)`
   margin-top: 50px;
   min-height: calc(100vh - 100px);
