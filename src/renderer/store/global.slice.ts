@@ -8,15 +8,21 @@ export interface GlobalState {
 }
 
 const initialState: GlobalState = {
-  appName: 'Marathon',
+  appName: 'Dolphins',
   user: null,
 };
 
 const globalSlice = createSlice({
   name: 'global',
   initialState,
-  reducers: {},
+  reducers: {
+    setUserInfo: (state: GlobalState, action) => {
+      state.user = action.payload;
+    },
+  },
 });
+
+export const { setUserInfo } = globalSlice.actions;
 
 export const selectAppName = (state: RootState) => state.global.appName;
 

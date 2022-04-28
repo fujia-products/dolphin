@@ -50,9 +50,10 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              modules: {
-                localIdentName: '[name]__[local]__[hash:base64:5]',
-              },
+              // NOTE: whether to enable css module
+              // modules: {
+              //   localIdentName: '[local]__[hash:base64:5]',
+              // },
             },
           },
           'sass-loader',

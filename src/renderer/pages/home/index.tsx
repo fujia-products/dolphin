@@ -2,9 +2,16 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import { shell } from 'electron';
 import { Layout, Menu, Avatar } from 'antd';
-import { useDocumentTitle } from '@fujia/hooks';
+import { useDocumentTitle, useMounted } from '@fujia/hooks';
 
-import { Logo, PageHeader, UserOperate, PageContent, PageFooter } from './styles';
+import { Logo, UserOperate } from './styles';
+import { bootstrapUser } from './service';
+import { useAppDispatch } from '@store/hooks';
+import { setUserInfo } from '@store/global.slice';
+
+console.log(Logo);
+
+const { Header, Content, Footer } = Layout;
 
 const NAVIGATION_LIST = [
   {
@@ -27,13 +34,25 @@ const NAVIGATION_LIST = [
 
 import { useAppSelector } from '@store/hooks';
 import { selectUser } from '@store/global.slice';
+import { User } from '@pages/login-register/service';
 // import { getAppPath } from '@utils/appPath';
 
 export const Home = () => {
-  const curUser = useAppSelector(selectUser);
+  const curUser = useAppSelector<User | null>(selectUser);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   // const [appPath, setAppPath] = useState('');
   useDocumentTitle('Dolphin | All From Love');
+
+  useMounted(() => {
+    if (curUser) return;
+
+    bootstrapUser().then((data) => {
+      if (data) {
+        dispatch(setUserInfo(data));
+      }
+    });
+  });
 
   const handleLink = (routeName: string) => {
     return () => {
@@ -53,7 +72,7 @@ export const Home = () => {
 
   return (
     <Layout>
-      <PageHeader style={{ position: 'fixed' }}>
+      <Header className="home-header" style={{ position: 'fixed' }}>
         <Logo onClick={handleLogoClick} />
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['develop']} items={NAVIGATION_LIST} />
         {!curUser ? (
@@ -67,13 +86,13 @@ export const Home = () => {
             </span>
           </UserOperate>
         ) : (
-          <Avatar size={40} />
+          <Avatar size={40} src={curUser.avatar || ''} />
         )}
-      </PageHeader>
-      <PageContent>
+      </Header>
+      <Content className="home-main">
         <h1>content</h1>
-      </PageContent>
-      <PageFooter>Dolphin ©2022 Created by Fujia.site</PageFooter>
+      </Content>
+      <Footer className="home-footer">Dolphin ©2022 Created by Fujia.site</Footer>
     </Layout>
   );
 };

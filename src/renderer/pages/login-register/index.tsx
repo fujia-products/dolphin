@@ -1,10 +1,10 @@
 import React from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Card } from 'antd';
 import { useNavigate } from 'react-router';
 import { useLocation } from 'react-router-dom';
 
-import { Container, LoginCard } from './styles';
+import { Container } from './styles';
 import { Login } from './components/login';
 import { Register } from './components/register';
 
@@ -17,15 +17,23 @@ export const LoginAndRegisterPage = () => {
 
   const isRegister = location.pathname === '/register';
 
+  const handleTogglePanel = () => {
+    if (isRegister) {
+      navigate('/login');
+    } else {
+      navigate('/register');
+    }
+  };
+
   return (
     <Container>
       <ArrowLeftOutlined onClick={handleBack} style={{ position: 'absolute', top: 24, left: 24, fontSize: 18 }} />
-      <LoginCard>
+      <Card style={{ width: 360, margin: '0 auto' }}>
         {isRegister ? <Register /> : <Login />}
-        <Button block type="primary">
-          {isRegister ? '立即注册' : '立即登录'}
+        <Button type="text" onClick={handleTogglePanel}>
+          去{isRegister ? '登录' : '注册'}
         </Button>
-      </LoginCard>
+      </Card>
     </Container>
   );
 };

@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { Card } from 'antd';
 
 import loginBg from '@assets/images/loginBg.svg';
 
@@ -10,9 +9,4 @@ export const Container = styled.section`
   background: left bottom no-repeat url(${loginBg});
   background-size: 30%;
   background-color: #f9f9f9;
-`;
-
-export const LoginCard = styled(Card)`
-  margin: 0 auto;
-  width: 360px;
 `;
