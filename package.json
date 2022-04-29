@@ -1,7 +1,7 @@
 {
   "name": "dolphin",
-  "version": "0.1.0",
-  "description": "the powerful toolkits for software engineers",
+  "version": "0.2.0",
+  "description": "The powerful toolkits for software engineers",
   "scripts": {
     "prepare": "husky install",
     "start": "concurrently \"node ./scripts/dev\" \"npm run json-server\"",

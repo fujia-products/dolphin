@@ -3,7 +3,8 @@ else
   module.exports = {
     background: 'resource/unrelease/appdmg.jpg',
     icon: 'resource/unrelease/mac/icon.icns',
-    iconSize: 100,
+    iconSize: 80,
+    backgroundColor: '#ffffff',
     sign: false,
     contents: [
       {

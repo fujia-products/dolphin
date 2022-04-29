@@ -1,3 +1,5 @@
+type Styles = Record<string, string>;
+
 declare module '*.png' {
   const png: string;
 
@@ -10,4 +12,20 @@ declare module '*.svg' {
   export default svg;
 }
 
-declare module '*.scss';
+declare module '*.jpg' {
+  const jpg: string;
+
+  export default jpg;
+}
+
+declare module '*.scss' {
+  const content: Styles;
+
+  export default content;
+}
+
+declare module '.css' {
+  const content: Styles;
+
+  export default content;
+}
