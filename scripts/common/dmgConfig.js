@@ -2,7 +2,7 @@ if (process.platform !== 'darwin') module.exports = {};
 else
   module.exports = {
     background: 'resource/unrelease/appdmg.jpg',
-    icon: 'resource/unrelease/icon.icns',
+    icon: 'resource/unrelease/mac/icon.icns',
     iconSize: 100,
     sign: false,
     contents: [
