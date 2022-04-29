@@ -1,48 +1,61 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router';
+import { useAsync } from '@fujia/hooks';
 
-import { useAppDispatch } from '@store/hooks';
 import { login } from '../service';
-import { setUserInfo } from '@store/global.slice';
 
 const Item = Form.Item;
 
 export const Login = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const handleLogin = () => {
-    login({
-      username: 'sunny',
-      password: '123',
-    })
-      .then((res) => {
-        message.success('登录成功');
-        dispatch(
-          setUserInfo({
-            payload: {
-              username: 'sunny',
-              avatar:
-                'https://images-1254102905.cos.ap-shanghai.myqcloud.com/articles/amine-m-siouri-xnxqvCX_EJE-unsplash.png',
-            },
-          })
-        );
-        navigate('/');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const { isLoading, run } = useAsync();
+
+  const handleFormFinish = (values: any) => {
+    run(
+      login(values)
+        .then(() => {
+          message.success('登录成功');
+
+          navigate('/');
+        })
+        .catch((err) => {
+          message.error(err?.msg);
+        })
+    );
+  };
+
+  const handleFormFailed = (errInfo: any) => {
+    console.log(errInfo);
   };
 
   return (
-    <Form>
-      <Item>
-        <Input type="text" placeholder="请输入用户名" />
+    <Form layout="vertical" onFinish={handleFormFinish} onFinishFailed={handleFormFailed}>
+      <Item
+        label="账号"
+        name="username"
+        rules={[
+          {
+            required: true,
+            message: '用户名',
+          },
+        ]}
+      >
+        <Input type="text" placeholder="登录用户名" />
       </Item>
-      <Item>
-        <Input type="password" placeholder="请输入密码" />
+      <Item
+        label="密码"
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: '请输入登录密码',
+          },
+        ]}
+      >
+        <Input type="password" placeholder="登录密码，由8~20位字符组成" />
       </Item>
-      <Button block type="primary" onClick={handleLogin}>
+      <Button loading={isLoading} block type="primary" htmlType="submit" style={{ marginTop: 8 }}>
         立即登录
       </Button>
     </Form>

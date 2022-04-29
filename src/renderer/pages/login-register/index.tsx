@@ -12,7 +12,7 @@ export const LoginAndRegisterPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const handleBack = () => {
-    navigate('/');
+    navigate(-1);
   };
 
   const isRegister = location.pathname === '/register';
@@ -27,11 +27,15 @@ export const LoginAndRegisterPage = () => {
 
   return (
     <Container>
-      <ArrowLeftOutlined onClick={handleBack} style={{ position: 'absolute', top: 24, left: 24, fontSize: 18 }} />
-      <Card style={{ width: 360, margin: '0 auto' }}>
+      <ArrowLeftOutlined
+        onClick={handleBack}
+        title="返回"
+        style={{ position: 'absolute', top: 24, left: 24, fontSize: 18 }}
+      />
+      <Card style={{ width: 360, margin: '0 auto', boxShadow: '4px 4px 8px #ccc' }}>
         {isRegister ? <Register /> : <Login />}
-        <Button type="text" onClick={handleTogglePanel}>
-          去{isRegister ? '登录' : '注册'}
+        <Button block type="link" onClick={handleTogglePanel} style={{ marginTop: 4, fontSize: '1.2rem' }}>
+          {isRegister ? '已有账号，去登录' : '没有账号，去注册'}
         </Button>
       </Card>
     </Container>

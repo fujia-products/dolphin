@@ -13,6 +13,15 @@ module.exports = (req, res, next) => {
         msg: '用户名或密码错误',
       });
     }
+  } else if (req.path === '/register') {
+    if (req.body.username && req.body.password) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          token: '123',
+        },
+      });
+    }
   }
 
   next();

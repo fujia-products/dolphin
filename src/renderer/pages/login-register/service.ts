@@ -20,20 +20,24 @@ export const login = (data: { username: string; password: string }) => {
     data,
     method: 'POST',
   }).then((res) => {
-    console.log(res);
     if (res.success) {
       return handleUserResponser(res.data);
     }
   });
 };
 
-export const register = (data: { username: string; pwd: string }) => {
-  return request('/register', {
+export const register = (data: { username: string; password: string }) => {
+  return request<IResponse>('/register', {
     method: 'POST',
     data,
   }).then((res) => {
-    return handleUserResponser(res);
+    if (res.success) {
+      return handleUserResponser(res.data);
+    }
   });
 };
 
-export const logout = async () => window.localStorage.removeItem(TOKEN_KEY);
+export const logout = async () => {
+  window.localStorage.removeItem(TOKEN_KEY);
+  // window.location.reload();
+};

@@ -3,6 +3,10 @@ export const ROUTER = {
   login: '/login',
   register: '/register',
   counter: '/counter',
+  develop: '/develop',
+  tools: '/tools',
+  services: '/services',
+  apps: '/apps',
 };
 
 export const ROUTER_KEYS = {
@@ -10,6 +14,10 @@ export const ROUTER_KEYS = {
   login: 'login',
   register: 'register',
   counter: 'counter',
+  develop: 'develop',
+  tools: 'tools',
+  services: 'services',
+  apps: 'apps',
 };
 
 export const ROUTER_ENTRY: IRouter.Item[] = [

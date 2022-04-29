@@ -1,46 +1,50 @@
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { Route, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { shell } from 'electron';
-import { Layout, Menu, Avatar } from 'antd';
+import { Layout, Menu, Avatar, Dropdown } from 'antd';
 import { useDocumentTitle, useMounted } from '@fujia/hooks';
+import { LogoutOutlined } from '@ant-design/icons';
 
 import { Logo, UserOperate } from './styles';
 import { bootstrapUser } from './service';
 import { useAppDispatch } from '@store/hooks';
 import { setUserInfo } from '@store/global.slice';
+import { logout } from '@pages/login-register/service';
 
-console.log(Logo);
+import { useAppSelector } from '@store/hooks';
+import { selectUser } from '@store/global.slice';
+import { User } from '@pages/login-register/service';
+import { myNotification } from '@utils/index';
+import { Link } from 'react-router-dom';
+// import { getAppPath } from '@utils/appPath';
 
 const { Header, Content, Footer } = Layout;
 
 const NAVIGATION_LIST = [
   {
-    key: 'develop',
-    label: '开发',
+    key: '/',
+    label: <Link to="/">开发</Link>,
   },
   {
-    key: 'tools',
-    label: '工具',
+    key: '/tools',
+    label: <Link to="/tools">工具</Link>,
   },
   {
-    key: 'services',
-    label: '服务',
+    key: '/services',
+    label: <Link to="/services">服务</Link>,
   },
   {
-    key: 'applications',
-    label: '应用',
+    key: '/apps',
+    label: <Link to="/apps">应用</Link>,
   },
 ];
-
-import { useAppSelector } from '@store/hooks';
-import { selectUser } from '@store/global.slice';
-import { User } from '@pages/login-register/service';
-// import { getAppPath } from '@utils/appPath';
 
 export const Home = () => {
   const curUser = useAppSelector<User | null>(selectUser);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
   // const [appPath, setAppPath] = useState('');
   useDocumentTitle('Dolphin | All From Love');
 
@@ -66,15 +70,43 @@ export const Home = () => {
     };
   };
 
-  const handleLogoClick = () => {
-    navigate('/');
+  const handleLogoClick = () => {};
+
+  const handleLogout = () => {
+    logout().then(() => {
+      dispatch(setUserInfo(null));
+      myNotification({ message: '退出成功', type: 'success' });
+    });
   };
+
+  const renderAvatarMenu = () => (
+    <Menu
+      style={{ width: 128 }}
+      items={[
+        {
+          label: (
+            <a onClick={handleLogout} style={{ display: 'block' }}>
+              <LogoutOutlined style={{ paddingRight: 6 }} />
+              退出
+            </a>
+          ),
+          type: 'group',
+        },
+      ]}
+    />
+  );
 
   return (
     <Layout>
       <Header className="home-header" style={{ position: 'fixed' }}>
         <Logo onClick={handleLogoClick} />
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['develop']} items={NAVIGATION_LIST} />
+        <Menu
+          theme="dark"
+          mode="horizontal"
+          defaultSelectedKeys={['develop']}
+          selectedKeys={[location.pathname]}
+          items={NAVIGATION_LIST}
+        />
         {!curUser ? (
           <UserOperate>
             <span className="login" onClick={handleLink('login')}>
@@ -86,11 +118,13 @@ export const Home = () => {
             </span>
           </UserOperate>
         ) : (
-          <Avatar size={40} src={curUser.avatar || ''} />
+          <Dropdown overlay={renderAvatarMenu()}>
+            <Avatar size={40} src={curUser.avatar || ''} />
+          </Dropdown>
         )}
       </Header>
       <Content className="home-main">
-        <h1>content</h1>
+        <Outlet />
       </Content>
       <Footer className="home-footer">Dolphin ©2022 Created by Fujia.site</Footer>
     </Layout>
