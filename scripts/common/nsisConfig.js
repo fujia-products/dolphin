@@ -11,8 +11,8 @@ else
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
     shortcutName: 'Dolphin',
-    installerIcon: '../resource/unrelease/icon.ico',
-    uninstallerIcon: '../resource/unrelease/icon.ico',
-    installerHeader: '../resource/unrelease/icon.ico',
-    installerHeaderIcon: '../resource/unrelease/icon.ico',
+    installerIcon: '../resource/unrelease/win/icon.ico',
+    uninstallerIcon: '../resource/unrelease/win/icon.ico',
+    installerHeader: '../resource/unrelease/win/icon.ico',
+    installerHeaderIcon: '../resource/unrelease/win/icon.ico',
   };

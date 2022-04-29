@@ -1,6 +1,7 @@
 /**
  * Electron render process
  */
+const path = require('path')
 const { resolve } = require('./utils');
 
 module.exports = {
@@ -26,17 +27,45 @@ module.exports = {
         },
       },
       {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'svg-sprite-loader',
+            options: {},
+          },
+          {
+            loader: 'svgo-loader',
+            options: {
+              plugins: [
+                {
+                  name: 'removeAttrs',
+                  params: {
+                    attrs: 'fill',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+        include: [
+          path.resolve(__dirname, '../../src/renderer/assets/icons')
+        ]
+      },
+      {
         test: /\.(jpg|png|jpeg|gif|svg)$/,
         use: [
           {
             loader: 'url-loader',
             options: {
               limit: 2048,
-              name: '[name]_[hash].[ext]',
+              name: '[name]_[hash:5].[ext]',
               outputPath: 'images/',
             },
           },
         ],
+        exclude: [
+          path.resolve(__dirname, '../../src/renderer/assets/icons')
+        ]
       },
       {
         test: /\.css$/,

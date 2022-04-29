@@ -1,7 +1,7 @@
 if (process.platform !== 'win32') module.exports = {};
 else
   module.exports = {
-    icon: '../resource/unrelease/icon.ico',
+    icon: '../resource/unrelease/win/icon.ico',
     target: [
       {
         target: 'nsis',
