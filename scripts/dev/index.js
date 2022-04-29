@@ -7,9 +7,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { merge } = require('webpack-merge');
 
-const mainBaseConfig = require('../common/webpackMainBase.js');
-const renderBaseConfig = require('../common/webpackRenderBase.js');
+const mainBaseConfig = require('../common/webpack.config.main.base');
+const renderBaseConfig = require('../common/webpack.config.render.base');
 const { MAIN_PROCESS_ENTRY } = require('../common/utils');
+
 const cwdDir = process.cwd();
 
 const dev = {
@@ -28,6 +29,7 @@ const dev = {
     const js = `${script}${fs.readFileSync(outFile)}`;
     fs.writeFileSync(outFile, js);
   },
+
   buildMain() {
     const config = merge(mainBaseConfig, {
       mode: 'development',
@@ -56,6 +58,7 @@ const dev = {
       });
     });
   },
+
   getRendererObj() {
     const result = {
       entry: {},
@@ -87,6 +90,7 @@ const dev = {
 
     return result;
   },
+
   createElectronProcess() {
     this.electronProcess = spawn(
       require('electron').toString(),
@@ -106,6 +110,7 @@ const dev = {
       console.log(data);
     });
   },
+
   startServer() {
     const rendererObj = this.getRendererObj();
     const config = merge(renderBaseConfig, {
@@ -128,6 +133,7 @@ const dev = {
       this.createElectronProcess();
     });
   },
+
   async start() {
     try {
       await this.buildMain();

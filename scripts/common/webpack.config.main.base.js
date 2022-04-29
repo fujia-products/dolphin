@@ -4,13 +4,14 @@ module.exports = {
   target: 'electron-main',
   externals: [nodeExternals()],
   devtool: 'source-map',
+  stats: 'errors-only',
   resolve: {
-    extensions: ['.js', '.ts'],
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },

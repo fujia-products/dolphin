@@ -1,15 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { merge } = require('webpack-merge');
 // require('dotenv').config();
-
-const mainBaseConfig = require('../common/webpackMainBase.js');
-const renderBaseConfig = require('../common/webpackRenderBase.js');
-const cwdDir = process.cwd();
+const webpackRendererProdConfig = require('../common/webpack.config.renderer.prod');
+const mainProdConfig = require('../common/webpack.config.main.prod');
 const { MAIN_PROCESS_ENTRY } = require('../common/utils');
+
+const cwdDir = process.cwd();
 
 const args = process.argv.slice(2);
 const isPack = args.includes('--dir');
@@ -29,19 +26,10 @@ const release = {
 
     fs.writeFileSync(outFile, js);
   },
-  buildMain() {
-    const config = merge(mainBaseConfig, {
-      mode: 'production',
-      entry: path.join(cwdDir, './src/main/app.ts'),
-      output: {
-        filename: MAIN_PROCESS_ENTRY,
-        path: path.join(cwdDir, 'release/bundled'),
-      },
-      plugins: [new CleanWebpackPlugin()],
-    });
 
+  buildMain() {
     return new Promise((resolve, reject) => {
-      webpack(config).run((err, stats) => {
+      webpack(mainProdConfig).run((err, stats) => {
         if (err) {
           console.error(err);
           reject(err);
@@ -58,52 +46,10 @@ const release = {
       });
     });
   },
-  getRendererObj() {
-    const result = {
-      entry: {},
-      plugins: [],
-    };
 
-    const rendererPath = path.join(cwdDir, 'src/renderer/pages');
-    const rendererFiles = fs.readdirSync(rendererPath);
-
-    for (const fileName of rendererFiles) {
-      if (!fileName.endsWith('.html')) continue;
-
-      const plainName = path.basename(fileName, '.html');
-      if (plainName === 'index') {
-        result.entry[plainName] = `/src/renderer/pages/index.tsx`;
-      } else {
-        result.entry[plainName] = `/src/renderer/pages/${plainName}/index.tsx`;
-      }
-
-      result.plugins.push(
-        new HtmlWebpackPlugin({
-          chunks: [plainName],
-          template: path.join(cwdDir, `/src/renderer/pages/${plainName}.html`),
-          filename: path.join(cwdDir, `/release/bundled/${plainName}.html`),
-          minify: true,
-        })
-      );
-    }
-
-    return result;
-  },
   buildRenderer() {
-    const rendererObj = this.getRendererObj();
-    const config = merge(renderBaseConfig, {
-      mode: 'production',
-      entry: rendererObj.entry,
-      devtool: false,
-      output: {
-        filename: '[name].bundle.js',
-        path: path.join(process.cwd(), 'release/bundled'),
-      },
-      plugins: rendererObj.plugins,
-    });
-
     return new Promise((resolve, reject) => {
-      webpack(config).run((err, stats) => {
+      webpack(webpackRendererProdConfig).run((err, stats) => {
         if (err) {
           console.error(err);
           reject(err);
@@ -117,6 +63,7 @@ const release = {
       });
     });
   },
+
   buildInstaller() {
     const builder = require('electron-builder');
 
@@ -155,6 +102,7 @@ const release = {
 
     builder.build(options);
   },
+
   buildModule() {
     const pkgJsonPath = path.join(cwdDir, 'package.json');
     const localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
@@ -170,6 +118,7 @@ const release = {
     fs.writeFileSync(path.join(cwdDir, 'release/bundled/package.json'), JSON.stringify(localPkgJson));
     fs.mkdirSync(path.join(cwdDir, 'release/bundled/node_modules'));
   },
+
   async start() {
     await this.buildMain();
     await this.buildRenderer();
