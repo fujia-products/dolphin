@@ -4,7 +4,6 @@ else
     background: 'resource/unrelease/appdmg.jpg',
     icon: 'resource/unrelease/mac/icon.icns',
     iconSize: 80,
-    backgroundColor: '#ffffff',
     sign: false,
     contents: [
       {
