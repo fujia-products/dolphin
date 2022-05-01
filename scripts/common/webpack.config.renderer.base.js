@@ -1,10 +1,22 @@
 /**
  * Electron render process
  */
-const path = require('path')
-const { resolve } = require('./utils');
+const { resolve, getRendererObj } = require('./utils');
+const { releaseBundledPath, assetsIconsPath } = require('./webpack.paths')
+
+const rendererObj = getRendererObj();
 
 module.exports = {
+  target: 'electron-renderer',
+  entry: rendererObj.entry,
+  output: {
+    filename: '[name].bundle.js',
+    path: releaseBundledPath,
+    // publicPath: '/',
+    // library: {
+    //   type: 'umd',
+    // },
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     alias: {
@@ -15,8 +27,6 @@ module.exports = {
       '@assets': resolve('/src/renderer/assets'),
     },
   },
-  target: 'electron-renderer',
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -47,9 +57,7 @@ module.exports = {
             },
           },
         ],
-        include: [
-          path.resolve(__dirname, '../../src/renderer/assets/icons')
-        ]
+        include: [assetsIconsPath]
       },
       {
         test: /\.(jpg|png|jpeg|gif|svg)$/,
@@ -63,22 +71,18 @@ module.exports = {
             },
           },
         ],
-        exclude: [
-          path.resolve(__dirname, '../../src/renderer/assets/icons')
-        ]
+        exclude: [assetsIconsPath]
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.scss$/,
-        exclude: /node_modules/,
+        test: /\.s?css$/,
         use: [
           'style-loader',
           {
             loader: 'css-loader',
             options: {
+              modules: true,
+              sourceMap: true,
+              importLoaders: 1,
               // NOTE: whether to enable css module
               // modules: {
               //   localIdentName: '[local]__[hash:base64:5]',
@@ -87,7 +91,21 @@ module.exports = {
           },
           'sass-loader',
         ],
+        include: /\.module\.s?(c|a)ss$/,
+      },
+      {
+        test: /\.s?css$/,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
+        exclude: /\.module\.s?(c|a)ss$/,
       },
     ],
+  },
+  plugins: [
+    ...rendererObj.plugins
+  ],
+  node: {
+    global: true,
+    __dirname: false,
+    __filename: false,
   },
 };

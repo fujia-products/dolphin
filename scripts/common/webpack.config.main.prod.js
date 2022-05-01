@@ -1,21 +1,23 @@
 const { merge } = require('webpack-merge');
 const TerserPlugin = require('terser-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-
-const mainBaseConfig = require('../common/webpack.config.main.base');
 const webpack = require('webpack');
 
-module.exports = merge(mainBaseConfig, {
+const baseConfig = require('../common/webpack.config.base');
+const { srcMainEntryPath, releaseBundledPath, srcMainPreloadPath } = require('./webpack.paths')
+
+module.exports = merge(baseConfig, {
+  target: 'electron-main',
   mode: 'production',
   entry: {
-    main: path.join(cwdDir, './src/main/main.ts'),
-    preload: path.join(cwdDir, './src/main/preload.ts'),
+    main: srcMainEntryPath,
+    preload: srcMainPreloadPath,
   },
   devtool: false,
 
   output: {
     filename: '[name].js',
-    path: path.join(cwdDir, 'release/bundled'),
+    path: releaseBundledPath,
   },
 
   optimization: {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import fs from 'fs';
+// import fs from 'fs';
 import path from 'path';
 import { app, BrowserWindow, protocol, ipcMain, shell } from 'electron';
 
@@ -75,7 +75,9 @@ const createWindow = async () => {
       webSecurity: false,
       nodeIntegration: true,
       contextIsolation: false,
-      // preload: app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js'),
+      // preload: app.isPackaged
+      //   ? path.join(__dirname, 'preload.js')
+      //   : path.join(__dirname, '../../release/bundled/preload.js'),
     },
   });
 
