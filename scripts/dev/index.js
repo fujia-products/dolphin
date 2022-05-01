@@ -1,15 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
-const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { merge } = require('webpack-merge');
+const webpack = require('webpack');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const WebpackDevServer = require('webpack-dev-server');
 
-const mainBaseConfig = require('../common/webpack.config.main.base');
-const renderBaseConfig = require('../common/webpack.config.render.base');
-const { MAIN_PROCESS_ENTRY } = require('../common/utils');
+const webpackRendererDevConfig = require('../common/webpack.config.renderer.dev');
+const mainBaseConfig = require('../common/webpack.config.base');
+const { MAIN_PROCESS_ENTRY, checkPortInUse } = require('../common/utils');
+const { releaseBundledPath, srcMainEntryPath, releaseMainEntryPath } = require('../common/webpack.paths')
 
 const cwdDir = process.cwd();
 
@@ -17,6 +17,10 @@ const dev = {
   server: null,
   serverPort: 1600,
   electronProcess: null,
+
+  /**
+   * inject environments
+   */
   injectEnvScript() {
     const env = require('./env.js');
     env.WEB_PORT = this.serverPort;
@@ -25,7 +29,7 @@ const dev = {
     for (let v in env) {
       script += `process.env.${v}="${env[v]}";`;
     }
-    const outFile = path.join(cwdDir, `release/bundled/${MAIN_PROCESS_ENTRY}`);
+    const outFile = releaseMainEntryPath;
     const js = `${script}${fs.readFileSync(outFile)}`;
     fs.writeFileSync(outFile, js);
   },
@@ -33,11 +37,13 @@ const dev = {
   buildMain() {
     const config = merge(mainBaseConfig, {
       mode: 'development',
-      entry: path.join(cwdDir, './src/main/app.ts'),
+      target: 'electron-main',
+      entry: srcMainEntryPath,
       output: {
-        filename: MAIN_PROCESS_ENTRY,
-        path: path.join(cwdDir, 'release/bundled'),
+        filename: '[name].js',
+        path: releaseBundledPath,
       },
+      // watch: true,
       plugins: [new CleanWebpackPlugin()],
     });
 
@@ -59,48 +65,57 @@ const dev = {
     });
   },
 
-  getRendererObj() {
-    const result = {
-      entry: {},
-      plugins: [],
-    };
-
-    const rendererPath = path.join(cwdDir, 'src/renderer/pages');
-    const rendererFiles = fs.readdirSync(rendererPath);
-
-    for (const fileName of rendererFiles) {
-      if (!fileName.endsWith('.html')) continue;
-
-      const plainName = path.basename(fileName, '.html');
-      if (plainName === 'index') {
-        result.entry[plainName] = `/src/renderer/pages/index.tsx`;
-      } else {
-        result.entry[plainName] = `/src/renderer/pages/${plainName}/index.tsx`;
-      }
-
-      result.plugins.push(
-        new HtmlWebpackPlugin({
-          chunks: [plainName],
-          template: path.join(cwdDir, `/src/renderer/pages/${plainName}.html`),
-          filename: path.join(cwdDir, `/release/bundled/${plainName}.html`),
-          minify: true,
-        })
-      );
-    }
-
-    return result;
-  },
-
+  /**
+   * create electron process
+   */
   createElectronProcess() {
+    // this.electronProcess = spawn(
+    //   require('electron').toString(),
+    //   [releaseMainEntryPath],
+    //   {
+    //     cwd: cwdDir,
+    //   }
+    // );
+
+    // this.electronProcess.on('close', () => {
+    //   this.server.close();
+    //   process.exit();
+    // });
+
+    // this.electronProcess.stdout.on('data', (data) => {
+    //   data = data.toString();
+    //   console.log(data);
+    // });
+
+    console.log('Starting preload.js builder...');
+    const preloadProcess = spawn('npm', ['run', 'start:preload'], {
+      shell: true,
+      stdio: 'inherit',
+    })
+      .on('close',  (code) => process.exit(code))
+      .on('error', (spawnError) => console.error(spawnError))
+
+    console.log('Starting Main Process...');
+    // spawn('npm', ['run', 'start:main'], {
+    //   shell: true,
+    //   stdio: 'inherit',
+    // })
+    //   .on('close', (code) => {
+    //     preloadProcess.kill();
+    //     process.exit(code);
+    //   })
+    //   .on('error', (spawnError) => console.error(spawnError))
+
     this.electronProcess = spawn(
-      require('electron').toString(),
-      [path.join(cwdDir, `release/bundled/${MAIN_PROCESS_ENTRY}`)],
+      'npx',
+      ['electron', releaseMainEntryPath],
       {
         cwd: cwdDir,
       }
     );
 
     this.electronProcess.on('close', () => {
+      preloadProcess.kill();
       this.server.close();
       process.exit();
     });
@@ -111,24 +126,24 @@ const dev = {
     });
   },
 
+  /**
+   * build renderer process
+   */
   startServer() {
-    const rendererObj = this.getRendererObj();
-    const config = merge(renderBaseConfig, {
-      entry: rendererObj.entry,
-      output: {
-        filename: '[name].[chunkhash:8].js',
-        path: path.join(cwdDir, 'release/bundled'),
-      },
-      mode: 'development',
-      plugins: rendererObj.plugins,
-    });
-
     const devServerConfig = {
-      static: path.join(cwdDir, 'release/bundled'),
+      static: releaseBundledPath,
       port: this.serverPort,
+      compress: true,
+      hot: false,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      historyApiFallback: {
+        verbose: true,
+      },
     };
-    const compiler = webpack(config);
+
+    const compiler = webpack(webpackRendererDevConfig);
     this.server = new WebpackDevServer(devServerConfig, compiler);
+
     this.server.start().then(() => {
       this.createElectronProcess();
     });
@@ -136,6 +151,7 @@ const dev = {
 
   async start() {
     try {
+      // await checkPortInUse(this.serverPort);
       await this.buildMain();
       this.startServer();
     } catch (err) {

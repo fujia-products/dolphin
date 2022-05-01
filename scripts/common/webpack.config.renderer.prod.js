@@ -4,25 +4,12 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
-const rendererBaseConfig = require('../common/webpack.config.render.base');
+const rendererBaseConfig = require('../common/webpack.config.renderer.base');
 const webpack = require('webpack');
-
-const { getRendererObj } = require('./utils');
-
-const rendererObj = getRendererObj();
 
 module.exports = merge(rendererBaseConfig, {
   mode: 'production',
-  entry: rendererObj.entry,
   devtool: false,
-
-  output: {
-    filename: '[name].bundle.js',
-    path: path.join(process.cwd(), 'release/bundled'),
-    library: {
-      type: 'umd',
-    },
-  },
 
   module: {
     rules: [
@@ -82,7 +69,5 @@ module.exports = merge(rendererBaseConfig, {
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
     }),
-
-    ...rendererObj.plugins
   ],
 });
