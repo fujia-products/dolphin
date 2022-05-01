@@ -29,11 +29,11 @@ protocol.registerSchemesAsPrivileged([
 
 let mainWin: BrowserWindow | null = null;
 
-// ipcMain.on('ipc-example', async (event, arg) => {
-//   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-//   console.log(msgTemplate(arg));
-//   event.reply('ipc-example', msgTemplate('pong'));
-// });
+ipcMain.on('ipc-example', async (event, arg) => {
+  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
+  console.log(msgTemplate(arg));
+  event.reply('ipc-example', msgTemplate('pong'));
+});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -41,8 +41,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const isDebug = process.env.NODE_ENV === 'development';
-
-console.log('isDebug', isDebug);
 
 if (isDebug) {
   require('electron-debug')();
@@ -114,12 +112,12 @@ const createWindow = async () => {
     height: 728,
     icon: '../../resource/unrelease/icon.png',
     webPreferences: {
-      webSecurity: false,
-      nodeIntegration: true,
-      contextIsolation: false,
-      // preload: app.isPackaged
-      //   ? path.join(__dirname, 'preload.js')
-      //   : path.join(__dirname, '../../release/bundled/preload.js'),
+      // webSecurity: false,
+      // nodeIntegration: true,
+      // contextIsolation: false,
+      preload: app.isPackaged
+        ? path.join(__dirname, 'preload.js')
+        : path.join(__dirname, '../../release/bundled/preload.js'),
     },
   });
 
