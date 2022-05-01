@@ -59,18 +59,29 @@ module.exports = {
         ],
         include: [assetsIconsPath]
       },
+      // {
+      //   test: /\.(jpg|png|jpeg|gif|svg)$/,
+      //   use: [
+      //     {
+      //       loader: 'url-loader',
+      //       options: {
+      //         limit: 2048,
+      //         name: '[name]_[hash:5].[ext]',
+      //         outputPath: 'images/',
+      //       },
+      //     },
+      //   ],
+      //   exclude: [assetsIconsPath]
+      // },
+       // Fonts
+       {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      },
+      // Images
       {
-        test: /\.(jpg|png|jpeg|gif|svg)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 2048,
-              name: '[name]_[hash:5].[ext]',
-              outputPath: 'images/',
-            },
-          },
-        ],
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
         exclude: [assetsIconsPath]
       },
       {
@@ -104,7 +115,6 @@ module.exports = {
     ...rendererObj.plugins
   ],
   node: {
-    global: true,
     __dirname: false,
     __filename: false,
   },

@@ -8,7 +8,7 @@ const WebpackDevServer = require('webpack-dev-server');
 
 const webpackRendererDevConfig = require('../common/webpack.config.renderer.dev');
 const mainBaseConfig = require('../common/webpack.config.base');
-const { MAIN_PROCESS_ENTRY, checkPortInUse } = require('../common/utils');
+const { checkPortInUse } = require('../common/utils');
 const { releaseBundledPath, srcMainEntryPath, releaseMainEntryPath } = require('../common/webpack.paths')
 
 const cwdDir = process.cwd();
@@ -48,7 +48,11 @@ const dev = {
     });
 
     return new Promise((resolve, reject) => {
-      webpack(config).run((err, stats) => {
+      webpack(config).watch({
+          // [watchOptions](/configuration/watch/#watchoptions) 示例
+          aggregateTimeout: 300,
+          poll: undefined
+      }, (err, stats) => {
         if (err) {
           reject(err);
           return;
@@ -108,7 +112,7 @@ const dev = {
 
     this.electronProcess = spawn(
       'npx',
-      ['electron', releaseMainEntryPath],
+      ['electronmon', releaseMainEntryPath],
       {
         cwd: cwdDir,
       }
