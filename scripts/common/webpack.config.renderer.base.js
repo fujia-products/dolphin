@@ -7,15 +7,15 @@ const { releaseBundledPath, assetsIconsPath } = require('./webpack.paths')
 const rendererObj = getRendererObj();
 
 module.exports = {
-  target: 'electron-renderer',
+  target: ['web', 'electron-renderer'],
   entry: rendererObj.entry,
   output: {
     filename: '[name].bundle.js',
     path: releaseBundledPath,
-    // publicPath: '/',
-    // library: {
-    //   type: 'umd',
-    // },
+    publicPath: '/',
+    library: {
+      type: 'umd',
+    },
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],

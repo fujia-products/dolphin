@@ -1,6 +1,6 @@
 import React from 'react';
-import { Route, useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { shell } from 'electron';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+// import { shell } from 'electron';
 import { Layout, Menu, Avatar, Dropdown } from 'antd';
 import { useDocumentTitle, useMounted } from '@fujia/hooks';
 import { LogoutOutlined } from '@ant-design/icons';
@@ -58,15 +58,24 @@ export const Home = () => {
     });
   });
 
+  useMounted(() => {
+    window.electron.ipcRenderer.once('ipc-example', (arg) => {
+      console.log('once:', arg);
+    });
+
+    window.electron.ipcRenderer.myPing();
+  });
+
   const handleLink = (routeName: string) => {
     return () => {
       if (routeName === 'login') {
         navigate('/login');
       } else if (routeName === 'register') {
         navigate('/register');
-      } else if (routeName === 'github') {
-        shell.openExternal('https://github.com/fushenguang/marathon');
       }
+      // else if (routeName === 'github') {
+      //   shell.openExternal('https://github.com/fushenguang/marathon');
+      // }
     };
   };
 

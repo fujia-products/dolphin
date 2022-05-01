@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-type CallbackFunc = (...args: unknown[]) => void;
+export type CallbackFunc = (...args: unknown[]) => void;
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

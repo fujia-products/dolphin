@@ -135,10 +135,17 @@ export class MenuBuilder {
       label: '查看',
       submenu: [
         {
-          label: 'Toggle Full Screen',
+          label: ' 全屏',
           accelerator: 'Ctrl+Command+F',
           click: () => {
             this.mainWin.setFullScreen(!this.mainWin.isFullScreen());
+          },
+        },
+        {
+          label: '开发者工具',
+          accelerator: 'Alt+Command+I',
+          click: () => {
+            this.mainWin.webContents.toggleDevTools();
           },
         },
       ],
