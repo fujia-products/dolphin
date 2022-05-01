@@ -1,6 +1,6 @@
 {
   "name": "dolphin",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "The powerful toolkits for software engineers",
   "scripts": {
     "prepare": "husky install",

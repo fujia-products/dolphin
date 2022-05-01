@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-// import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { app, BrowserWindow, protocol, ipcMain, shell } from 'electron';
 
@@ -65,6 +65,48 @@ const createWindow = async () => {
   // if (isDebug) {
   //   await installExtensions();
   // }
+  protocol.registerBufferProtocol('app', (request, response) => {
+    let pathName = new URL(request.url).pathname;
+    let extension = path.extname(pathName).toLowerCase();
+    if (!extension) return;
+
+    pathName = decodeURI(pathName);
+
+    const filePath = path.join(process.resourcesPath, 'app.asar', pathName);
+
+    fs.readFile(filePath, (error, data) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      let mimeType = '';
+      switch (extension) {
+        case '.js':
+          mimeType = 'text/javascript';
+          break;
+        case '.html':
+          mimeType = 'text/html';
+          break;
+        case '.css':
+          mimeType = 'text/css';
+          break;
+        case '.svg':
+          mimeType = 'image/svg+xml';
+          break;
+        case '.json':
+          mimeType = 'application/json';
+          break;
+        default:
+          break;
+      }
+
+      response({
+        mimeType,
+        data,
+      });
+    });
+  });
 
   mainWin = new BrowserWindow({
     show: false,
@@ -137,69 +179,3 @@ app
     });
   })
   .catch(console.log);
-
-// app.on('ready', () => {
-//   protocol.registerBufferProtocol('app', (request, response) => {
-//     let pathName = new URL(request.url).pathname;
-//     let extension = path.extname(pathName).toLowerCase();
-//     if (!extension) return;
-
-//     pathName = decodeURI(pathName);
-
-//     const filePath = path.join(process.resourcesPath, 'app.asar', pathName);
-
-//     fs.readFile(filePath, (error, data) => {
-//       if (error) {
-//         console.error(error);
-//         return;
-//       }
-
-//       let mimeType = '';
-//       switch (extension) {
-//         case '.js':
-//           mimeType = 'text/javascript';
-//           break;
-//         case '.html':
-//           mimeType = 'text/html';
-//           break;
-//         case '.css':
-//           mimeType = 'text/css';
-//           break;
-//         case '.svg':
-//           mimeType = 'image/svg+xml';
-//           break;
-//         case '.json':
-//           mimeType = 'application/json';
-//           break;
-//         default:
-//           break;
-//       }
-
-//       response({
-//         mimeType,
-//         data,
-//       });
-//     });
-//   });
-
-//   mainWin = new BrowserWindow({
-//     width: 1200,
-//     height: 800,
-//     webPreferences: {
-//       webSecurity: false,
-//       nodeIntegration: true,
-//       contextIsolation: false,
-//     },
-//   });
-
-//   if (app.isPackaged) {
-//     mainWin.loadURL('app://./index.html');
-//   } else {
-//     mainWin.loadURL(`http://localhost:${process.env.WEB_PORT}`);
-//   }
-
-//   /**
-//    * NOTE: added autoUpdate
-//    */
-//   appUpdater(mainWin).checkForUpdates();
-// });
