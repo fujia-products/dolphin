@@ -29,4 +29,15 @@ contextBridge.exposeInMainWorld('electron', {
       }
     },
   },
+  store: {
+    get(val: any) {
+      return ipcRenderer.sendSync('store-get', val);
+    },
+    set(property: string, val: any) {
+      ipcRenderer.send('store-set', property, val);
+    },
+    delete(property: string) {
+      ipcRenderer.send('store-delete', property);
+    },
+  },
 });

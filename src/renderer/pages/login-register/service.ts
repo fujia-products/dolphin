@@ -10,7 +10,8 @@ export interface User {
 }
 
 export const handleUserResponser = (data: any) => {
-  window.localStorage.setItem(TOKEN_KEY, data?.token || '');
+  // window.localStorage.setItem(TOKEN_KEY, data?.token || '');
+  window.electron.store.set(TOKEN_KEY, data?.token || '');
 
   return data?.token;
 };
@@ -38,6 +39,7 @@ export const register = (data: { username: string; password: string }) => {
 };
 
 export const logout = async () => {
-  window.localStorage.removeItem(TOKEN_KEY);
+  // window.localStorage.removeItem(TOKEN_KEY);
   // window.location.reload();
+  window.electron.store.delete(TOKEN_KEY);
 };
