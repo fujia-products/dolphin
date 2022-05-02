@@ -115,6 +115,7 @@ export const Home = () => {
           defaultSelectedKeys={['develop']}
           selectedKeys={[location.pathname]}
           items={NAVIGATION_LIST}
+          style={{ outline: 'none' }}
         />
         {!curUser ? (
           <UserOperate>

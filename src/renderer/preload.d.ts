@@ -8,6 +8,11 @@ declare global {
         on: (channel: string, func: CallbackFunc) => VoidFunction | undefined;
         once: (channel: string, func: CallbackFunc) => void;
       };
+      store: {
+        get: (key: string) => any;
+        set: (key: string, val: any) => void;
+        delete: (key: string) => void;
+      };
     };
   }
 }

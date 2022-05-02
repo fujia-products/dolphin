@@ -2,9 +2,12 @@
 import fs from 'fs';
 import path from 'path';
 import { app, BrowserWindow, protocol, ipcMain, shell } from 'electron';
+import EStore from 'electron-store';
 
 import { appUpdater } from './updater';
 import { MenuBuilder } from './menu';
+
+export const eStore = new EStore();
 
 // const ROOT_PATH = path.join(app.getAppPath(), '../..');
 
@@ -35,13 +38,26 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
+ipcMain.on('store-get', async (event, val) => {
+  event.returnValue = eStore.get(val);
+});
+
+ipcMain.on('store-set', async (_event, key, val) => {
+  eStore.set(key, val);
+});
+
+ipcMain.on('store-delete', async (_event, key) => {
+  eStore.delete(key);
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
 
 const isDebug = process.env.NODE_ENV === 'development';
-console.log('isDebug', isDebug);
+// console.log('isDebug', isDebug);
+console.log('app.getPath', app.getPath('userData'));
 
 if (isDebug) {
   require('electron-debug')();
