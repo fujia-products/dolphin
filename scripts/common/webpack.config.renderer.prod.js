@@ -67,7 +67,8 @@ module.exports = merge(rendererBaseConfig, {
     }),
 
     new BundleAnalyzerPlugin({
-      analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
+      // analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
+      analyzerMode: 'server',
     }),
   ],
 });

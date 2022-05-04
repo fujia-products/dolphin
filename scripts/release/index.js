@@ -5,6 +5,12 @@ const webpack = require('webpack');
 const webpackRendererProdConfig = require('../common/webpack.config.renderer.prod');
 const mainProdConfig = require('../common/webpack.config.main.prod');
 const { MAIN_PROCESS_ENTRY } = require('../common/utils');
+const {
+  appPackageJsonPath,
+  releasePackageJsonPath,
+  releaseMainEntryPath,
+  releaseBundledNodeModulesPath,
+} = require('../common/webpack.paths')
 
 const cwdDir = process.cwd();
 
@@ -21,10 +27,10 @@ const release = {
     }
 
     script += `process.env.RES_DIR = process.resourcesPath;`;
-    const outFile = path.join(process.cwd(), `release/bundled/${MAIN_PROCESS_ENTRY}`);
-    const js = `${script}${fs.readFileSync(outFile)}`;
 
-    fs.writeFileSync(outFile, js);
+    const js = `${script}${fs.readFileSync(releaseMainEntryPath)}`;
+
+    fs.writeFileSync(releaseMainEntryPath, js);
   },
 
   buildMain() {
@@ -104,19 +110,22 @@ const release = {
   },
 
   buildModule() {
-    const pkgJsonPath = path.join(cwdDir, 'package.json');
-    const localPkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
+    const localPkgJson = JSON.parse(fs.readFileSync(appPackageJsonPath, 'utf-8'));
     let electronConfig = localPkgJson.devDependencies.electron.replace('^', '');
+
     delete localPkgJson.scripts;
     delete localPkgJson.devDependencies;
+    delete localPkgJson.keywords;
+    delete localPkgJson.commitlint;
+    delete localPkgJson['lint-staged'];
 
     localPkgJson.main = MAIN_PROCESS_ENTRY;
     localPkgJson.devDependencies = {
       electron: electronConfig,
     };
 
-    fs.writeFileSync(path.join(cwdDir, 'release/bundled/package.json'), JSON.stringify(localPkgJson));
-    fs.mkdirSync(path.join(cwdDir, 'release/bundled/node_modules'));
+    fs.writeFileSync(releasePackageJsonPath, JSON.stringify(localPkgJson));
+    fs.mkdirSync(releaseBundledNodeModulesPath);
   },
 
   async start() {

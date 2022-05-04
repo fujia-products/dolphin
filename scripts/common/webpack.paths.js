@@ -13,6 +13,8 @@ const assetsIconsPath = path.join(srcRendererPath, 'assets/icons');
 const releasePath = path.join(rootPath, 'release');
 const releaseBundledPath = path.join(releasePath, 'bundled');
 const releaseMainEntryPath = path.join(releaseBundledPath, 'main.js');
+const releasePackageJsonPath = path.join(releaseBundledPath, 'package.json');
+const releaseBundledNodeModulesPath = path.join(releaseBundledPath, 'node_modules');
 const appPackageJsonPath = path.join(rootPath, 'package.json');
 
 const nodeModulesPath = path.join(rootPath, 'node_modules');
@@ -29,6 +31,8 @@ module.exports = {
   releasePath,
   releaseBundledPath,
   releaseMainEntryPath,
+  releasePackageJsonPath,
+  releaseBundledNodeModulesPath,
   appPackageJsonPath,
   nodeModulesPath,
 }
